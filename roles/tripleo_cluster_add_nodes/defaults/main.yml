@@ -1,0 +1,8 @@
+---
+# defaults file for tripleo_cluster_add_nodes
+
+labels:
+  ceph_mon:
+    - mon
+  ceph_osd:
+    - osd
