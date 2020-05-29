@@ -1,5 +1,9 @@
-# tripleo-cephadm
+# tripleo-ceph
 
-A collection of playbooks to deploy a Ceph Octopus cluster using cephadm and
-manage resources with Ceph orchestrator tool.
+A collection of Ansible roles to deploy a Ceph cluster defined
+by TripleO parameters using
+[cephadm](https://docs.ceph.com/docs/master/cephadm/install)
+and
+[orchestrator](https://docs.ceph.com/docs/master/mgr/orchestrator).
+
 
