@@ -8,9 +8,13 @@ placement:
 {% elif use_labels %}
   label: {{ service }}
 {% else %}
-  hosts: 
+  hosts:
 {% for host in (groups['ceph_' + service]) %}
     - {{ host }}
 {% endfor %}
+{% endif %}
+{% if 'osd' in service and data_devices | length == 0%}
+data_devices:
+  all: true
 {% endif %}
 {% endfor %}
