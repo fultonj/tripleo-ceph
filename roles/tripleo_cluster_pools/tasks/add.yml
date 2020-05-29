@@ -1,0 +1,20 @@
+---
+- name: create pools
+  shell: "{{ ceph_client }} osd pool create {{ item.name }} {{ item.pg_num }} {{ item.pgp_num }} "
+  loop: "{{ pools }}"
+  register: create_pools
+  become: true
+
+- name: show output of 'ceph osd pool create'
+  debug:
+    msg: "{{ create_pools }}"
+
+- name: enable application on pools
+  shell: "{{ ceph_client }} osd pool application enable {{ item.name }} {{ item.application}}"
+  loop: "{{ pools }}"
+  register: enable_app
+  become: true
+
+- name: show output of 'ceph osd pool application enable'
+  debug:
+    msg: "{{ enable_app }}"
