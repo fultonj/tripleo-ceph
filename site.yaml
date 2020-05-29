@@ -53,10 +53,12 @@
       when:
         - not apply_spec
       block:
-        - name: scale nodes
+        - name: Add all the Ceph cluster hosts via orchestrator
           include_role:
-            name: tripleo_ceph_scale
-            tasks_from: up
+            name: tripleo_cluster_add_nodes
+            tasks_from: nodes
+          vars:
+            ceph_client: "{{ ceph_cli }}"
 
       # depends on getting https://github.com/ceph/ceph/pull/34879
     - name: Use cephadm bootstrap add --apply-spec
