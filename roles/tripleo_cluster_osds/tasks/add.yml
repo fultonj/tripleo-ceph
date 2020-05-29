@@ -1,0 +1,16 @@
+---
+- name: fail if not using all_available
+  fail:
+    msg: "We will add support for the devices list later, use all_available for now"
+  when: not all_available
+
+- name: Run 'ceph orch apply osd'
+  shell: "{{ ceph_cli }} orch apply osd --all-available-devices"
+  register: orch_apply_osd
+  become: true
+  ignore_errors: true
+  when: all_available
+
+- name: show output of 'ceph orch apply osd'
+  debug:
+    msg: "{{ orch_apply_osd.stdout_lines }}"
