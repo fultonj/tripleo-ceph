@@ -1,0 +1,12 @@
+---
+- name: Create keys
+  shell: "{{ ceph_cli }} auth get-or-create {{ item.name }} mon '{{ item.caps.mon }}' mgr '{{ item.caps.mgr }}' osd '{{ item.caps.osd }}'"
+  loop: "{{ keys }}"
+  register: auth_get_or_create
+  become: true
+
+- name: Export keys to file
+  shell: "{{ ceph_cli }} auth get {{ item.name }} > {{ ceph_config_home }}/{{ ceph_cluster_name }}.{{ item.name }}.keyring"
+  loop: "{{ keys }}"
+  register: auth_get_or_create
+  become: true
