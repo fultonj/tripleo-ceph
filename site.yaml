@@ -59,6 +59,54 @@
             tasks_from: nodes
           vars:
             ceph_client: "{{ ceph_cli }}"
+          tags:
+            - nodes
+
+        - name: Add OSDs to the Ceph cluster via orchestrator
+          include_role:
+            name: tripleo_cluster_osds
+            tasks_from: add
+          vars:
+            ceph_client: "{{ ceph_cli }}"
+            all_available: false
+            devices: []
+          tags:
+            - osds
+
+        # It may make more sense to just use this
+        # https://github.com/ceph/ceph-ansible/blob/master/library/ceph_pool.py
+        - name: Add OpenStack pools to the Ceph cluster
+          include_role:
+            name: tripleo_cluster_pools
+            tasks_from: add
+          vars:
+            ceph_client: "{{ ceph_cli }}"
+            pools:
+              - {"name": rbd, "pg_num": 32, "pgp_num": 32, "application": rbd}
+              - {"name": volumes, "pg_num": 32, "pgp_num": 32, "application": rbd}
+              - {"name": vms, "pg_num": 32, "pgp_num": 32, "application": rbd}
+              - {"name": images, "pg_num": 32, "pgp_num": 32, "application": rbd}
+          tags:
+            - pools
+
+        # It may make more sense to just use this
+        # https://github.com/ceph/ceph-ansible/blob/master/library/ceph_key.py
+        - name: Add OpenStack key to the Ceph cluster
+          include_role:
+            name: tripleo_cluster_keys
+            tasks_from: add
+          vars:
+            ceph_client: "{{ ceph_cli }}"
+            ceph_cluster_name: ceph
+            ceph_config_home: "/etc/ceph"
+            keys:
+              - name: "client.opentsack"
+                caps:
+                  mgr: "allow *"
+                  mon: "profile rbd"
+                  osd: "profile rbd pool=vms, profile rbd pool=volumes, profile rbd pool=images"
+          tags:
+            - keys
 
       # depends on getting https://github.com/ceph/ceph/pull/34879
     - name: Use cephadm bootstrap add --apply-spec
@@ -87,3 +135,17 @@
           tags:
             - ceph_spec_apply
             - day1
+
+- hosts: allovercloud
+  tasks:
+    - name: rsync ceph configuration and openstack key to all nodes
+      include_role:
+        name: ceph_client
+        tasks_from: sync
+      vars:
+        path: "/etc/ceph"
+        files:
+          - ceph.conf
+          - ceph.client.opentsack.keyring
+      tags:
+        - client
