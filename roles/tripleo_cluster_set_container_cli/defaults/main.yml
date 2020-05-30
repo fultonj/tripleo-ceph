@@ -1,0 +1,10 @@
+---
+# defaults file for tripleo_ceph_set_container_cli
+ceph_dot_conf: "{{ ceph_config_home}}/ceph.conf"
+ceph_keyring: "{{ ceph_config_home }}/ceph.client.admin.keyring"
+ceph_container_ns: "docker.io/ceph"
+ceph_container_image: "ceph"
+ceph_container_tag: "v15"
+container_cli: "podman"
+container_options: "--net=host --ipc=host"
+debug_orch: false

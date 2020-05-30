@@ -1,0 +1,22 @@
+- name: Get ceph fsid
+  command: "awk '/fsid/ {print $3}' /etc/ceph/ceph.conf"
+  register: fsid
+  run_once: true
+  changed_when: false
+
+- name: Set fsid fact
+  set_fact:
+    fsid: "{{ fsid.stdout }}"
+
+- name: Set client fact
+  set_fact:
+    ceph_cli: "{{ container_cli }} run --rm -it {{ container_options }} -v {{ ceph_config_home}}:/etc/ceph:z
+               {{ ceph_container_ns }}/{{ ceph_container_image }}:{{ ceph_container_tag }} ceph --fsid {{ fsid }}
+               -c {{ ceph_dot_conf }} -k {{ ceph_keyring }}"
+  run_once: true
+  become: true
+
+- name: Debug task - Check if ceph_cli is working properly
+  command: "{{ ceph_cli }} orch status"
+  become: true
+  when: debug_orch
