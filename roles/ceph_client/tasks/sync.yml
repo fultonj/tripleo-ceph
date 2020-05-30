@@ -1,0 +1,21 @@
+---
+- name: get files from first monitor
+  fetch:
+    src: "{{ path }}/{{ item }}"
+    dest: "fetch_dir/{{ item }}"
+    flat: true
+  loop: "{{ files }}"
+  delegate_to: "{{ groups.get('mons', {})[0] }}"
+
+- name: Ensure /etc/ceph exists on all nodes of cluster
+  file:
+    path: "{{ path }}"
+    state: "directory"
+  
+- name: push files to other nodes of cluster
+  become: true
+  synchronize:
+    mode: push
+    dest: "{{ path }}/{{ item }}"
+    src: "fetch_dir/{{ item }}"
+  loop: "{{ files }}"

@@ -87,3 +87,17 @@
           tags:
             - ceph_spec_apply
             - day1
+
+- hosts: allovercloud
+  tasks:
+    - name: rsync ceph configuration and openstack key to all nodes
+      include_role:
+        name: ceph_client
+        tasks_from: sync
+      vars:
+        path: "/etc/ceph"
+        files:
+          - ceph.conf
+          - ceph.client.opentsack.keyring
+      tags:
+        - client
