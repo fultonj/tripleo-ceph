@@ -8,7 +8,7 @@ Role Variables
 --------------
 
 path: source and destination of files to mirror
-files: list of files to mirror, e.g. [ceph.conf, ceph.client.opentsack.keyring]
+files: list of files to mirror, e.g. [ceph.conf, ceph.client.openstack.keyring]
 
 Example Playbook
 ----------------
@@ -21,7 +21,7 @@ Example Playbook
         path: "/etc/ceph"
         files:
           - ceph.conf
-          - ceph.client.opentsack.keyring
+          - ceph.client.openstack.keyring
 
 License
 -------
