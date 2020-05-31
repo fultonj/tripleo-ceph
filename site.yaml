@@ -92,7 +92,7 @@
             ceph_cluster_name: ceph
             ceph_config_home: "/etc/ceph"
             keys:
-              - name: "client.opentsack"
+              - name: "client.openstack"
                 caps:
                   mgr: "allow *"
                   mon: "profile rbd"
@@ -138,6 +138,6 @@
         path: "/etc/ceph"
         files:
           - ceph.conf
-          - ceph.client.opentsack.keyring
+          - ceph.client.openstack.keyring
       tags:
         - client
