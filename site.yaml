@@ -3,7 +3,6 @@
   vars:
     cephadm_bin_home: "/usr/sbin"
     cephadm_pkg: "https://download.ceph.com/rpm-octopus/el8/x86_64/cephadm-15.2.3-0.el8.x86_64.rpm"
-    ceph_public_network: "172.16.11.0/24"
   tasks:
     - name: Bootstrap the first minimal ceph cluster via cephadm
       include_role:
@@ -32,6 +31,7 @@
     ceph_config_home: "/etc/ceph"
     ceph_dot_conf: "{{ ceph_config_home}}/ceph.conf"
     ceph_keyring: "{{ ceph_config_home }}/ceph.client.admin.keyring"
+    ceph_public_network: "172.16.11.0/24"
     apply_spec: false
   tasks:
     - name: Set client fact
@@ -40,6 +40,15 @@
         tasks_from: set_container_cli
       tags:
         - ceph_client
+
+    - name: Apply MONs options
+      include_role:
+        name: tripleo_cluster_mon_config
+        tasks_from: set_monitor_public_network
+      vars:
+        ceph_client: "{{ ceph_cli }}"
+      tags:
+        - mon_config
 
     - name: Use ceph orchestrator to scale ceph cluster
       when:
