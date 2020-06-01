@@ -1,0 +1,6 @@
+---
+- name: Set ceph monitors public network (we're going to use this network to deploy additional monitors)
+  command: "{{ ceph_cli }} config set mon public_network {{ ceph_public_network }}"
+  register: result
+  become: true
+  run_once: true
