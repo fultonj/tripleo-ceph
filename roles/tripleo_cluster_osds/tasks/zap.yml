@@ -1,0 +1,15 @@
+---
+- name: fail if device_list is empty
+  fail:
+    msg: "A device list should be passed as input of this role"
+  when: "{{ device_list | length == 0 }}"
+
+- name: Run 'ceph orch zap'
+  shell: "{{ ceph_cli }} orch device zap {{ item[0] }} {{ item[1] }} --force"
+  register: orch_dev_zap
+  become: true
+  ignore_errors: true
+  with_nested:
+    - "{{ nodes }}"
+    - "{{ device_list }}"
+

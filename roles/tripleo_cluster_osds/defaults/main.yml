@@ -1,2 +1,10 @@
 ---
 # defaults file for tripleo_cluster_osds
+#
+device_list:
+  - /dev/sda
+  - /dev/sdb
+  - /dev/sdc
+  - /dev/sdd
+
+nodes: "{{ groups.get('osds', {}) }}"
