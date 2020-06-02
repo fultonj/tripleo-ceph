@@ -121,6 +121,8 @@
           vars:
             ceph_client: "{{ ceph_cli }}"
             dest_path: "/etc/ceph"
+            use_labels: false
+            use_pattern: false
           tags:
             - ceph_spec
             - day1

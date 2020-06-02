@@ -1,20 +1,21 @@
-{% for service in tripleo_cephadm_services %}
+{% for item in tripleo_cephadm_services %}
 ---
-service_type: {{ service }}
-service_id: {{ service }}
+service_type: {{ item['service'] }}
+service_id: {{ item['service'] }}
 placement:
-{% if use_pattern %}
-  host_pattern: "{{ service }}*"
+{% if use_pattern or 'osd' in item['service'] %}
+  host_pattern: "{{ item['regex'] }}*"
 {% elif use_labels %}
-  label: {{ service }}
+  label: {{ item['label'] }}
 {% else %}
   hosts:
-{% for host in (groups['ceph_' + service]) %}
+{% for host in (groups['ceph_' + item['service']]|default(groups['ceph_mon'])) %}
     - {{ host }}
 {% endfor %}
 {% endif %}
-{% if 'osd' in service and data_devices | length == 0%}
+{% if 'osd' in item['service'] and data_devices | length == 0%}
 data_devices:
   all: true
+encrypted: {{ 'true' if encrypted else 'false' }}
 {% endif %}
 {% endfor %}
