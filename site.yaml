@@ -63,29 +63,12 @@
           tags:
             - nodes
 
-        - name: Zap all the Ceph nodes OSDs via orchestrator
-          include_role:
-            name: tripleo_cluster_osds
-            tasks_from: zap
-          vars:
-            ceph_client: "{{ ceph_cli }}"
-            devices:
-              - /dev/sda
-              - /dev/sdb
-              - /dev/sdc
-              - /dev/sdd
-            nodes: "{{ groups.get('osds', {}) }}"
-          tags:
-            - osds
-            - zap
-
         - name: Add OSDs to the Ceph cluster via orchestrator
           include_role:
             name: tripleo_cluster_osds
             tasks_from: add
           vars:
             ceph_client: "{{ ceph_cli }}"
-            all_available: true
             devices: []
           tags:
             - osds
