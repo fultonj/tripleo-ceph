@@ -7,13 +7,9 @@
   when: "{{ devices | length == 0 }}"
 
 - name: Apply OSDs using the device list
-  shell: "{{ ceph_cli }} orch daemon add osd {{ item }}:{{ devices|join(',') }} --force"
-  register: orch_dev_zap
+  shell: "{{ ceph_cli }} orch daemon add osd {{ item }}:{{ devices|join(',') }}"
+  register: orch_apply_osd
   become: true
   ignore_errors: true
   with_items:
     - "{{ groups.get('osds', {}) }}"
-
-- name: show output of 'ceph orch apply osd'
-  debug:
-    msg: "{{ orch_apply_osd.stdout_lines }}"
