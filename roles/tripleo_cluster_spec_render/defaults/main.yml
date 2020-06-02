@@ -1,14 +1,16 @@
 ---
 # defaults file for tripleo_cluster_deploy
 tripleo_cephadm_services:
-  - mon
-  - mgr
-  - osd
+  - {'service': 'mon', 'regex': '*controller*', 'label': 'mon'}
+  - {'service': 'mgr', 'regex': '*controller*', 'label': 'mgr'}
+  - {'service': 'osd', 'regex': '*ceph*', 'label': 'osd'}
+
 # leaving an empty data_devices result in --all-available-devices
 # TODO: Add filter options to data_devices
 data_devices: {}
 use_labels: false
 use_pattern: true
+encrypted: false
 dest_path: /etc/ceph
 ceph_template_list:
   - spec.yaml
