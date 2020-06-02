@@ -4,7 +4,7 @@
   register: osd_tree
   become: true
   ignore_errors: true
-  
+
 - name: show output of 'ceph osd tree'
   debug:
     msg: "{{ osd_tree.stdout_lines }}"

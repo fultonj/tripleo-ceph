@@ -1,2 +1,4 @@
 ---
 # defaults file for tripleo_cluster_osds
+#
+devices: []
