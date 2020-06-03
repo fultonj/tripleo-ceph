@@ -6,4 +6,3 @@
   loop: "{{ ceph_template_list }}"
   become: true
   run_once: true
-  delegate_to: "{{ groups.get('mons', {})[0] }}"

@@ -1,16 +1,14 @@
 ---
 # defaults file for tripleo_cluster_deploy
 tripleo_cephadm_services:
-  - {'service': 'mon', 'regex': '*controller*', 'label': 'mon'}
-  - {'service': 'mgr', 'regex': '*controller*', 'label': 'mgr'}
-  - {'service': 'osd', 'regex': '*ceph*', 'label': 'osd'}
+  - {'service_type': 'mon', 'service_id': 'mon', 'regex': '*controller*', 'label': 'mon'}
+  - {'service_type': 'mgr', 'service_id': 'mgr', 'regex': '*controller*', 'label': 'mgr'}
+  - {'service_type': 'osd', 'service_id': 'osd', 'regex': '*ceph*', 'label': 'osd'}
+  - {'service_type': 'nfs', 'service_id': 'nfs', 'regex': '*controller*', 'label': 'nfs',
+    'spec': {'pool': 'mynfspool', 'namespace': 'myns'}}
 
-# leaving an empty data_devices result in --all-available-devices
-# TODO: Add filter options to data_devices
-data_devices: {}
 use_labels: false
 use_pattern: true
-encrypted: false
 dest_path: /etc/ceph
 ceph_template_list:
   - spec.yaml
@@ -30,3 +28,27 @@ labels:
     - osd
     - node-exporter
 
+# Devices filter section
+# leaving an empty data_devices results in --all-available-devices
+data_devices: {}
+db_devices: {}
+wal_devices: {}
+encrypted: false
+
+# Filters example
+
+#data_devices:
+#  filters:
+#    rotational: 1
+#    size: "2TB"
+#db_devices:
+#  filters:
+#    model: "ModelB"
+#    size: "10G"
+#    rotational: 0
+#    limit: 2
+#wal_devices:
+#  filters:
+#    model: "ModelC"
+#    size: "10G"
+#    rotational: 0
