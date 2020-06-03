@@ -8,10 +8,11 @@
   delegate_to: "{{ groups.get('mons', {})[0] }}"
 
 - name: Ensure /etc/ceph exists on all nodes of cluster
+  become: true
   file:
     path: "{{ path }}"
     state: "directory"
-  
+
 - name: push files to other nodes of cluster
   become: true
   synchronize:
