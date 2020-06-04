@@ -1,21 +1,49 @@
+{# MACRO AREA #}
+{% macro render_map(root, fltr) -%}
+{% for key, value in root.get(fltr, {}).items() %}
+  {{ key}}: {{ value }}
+{% endfor %}
+{% endmacro %}
 {% for item in tripleo_cephadm_services %}
 ---
-service_type: {{ item['service'] }}
-service_id: {{ item['service'] }}
+service_type: {{ item['service_type'] }}
+service_id: {{ item['service_id'] }}
 placement:
-{% if use_pattern or 'osd' in item['service'] %}
-  host_pattern: "{{ item['regex'] }}*"
+count: {{ item['count'] | default((groups['ceph_' + item['service_type']] | default(groups['ceph_mon'])) | length) }}
+{% if use_pattern or 'osd' in item['service_type'] %}
+  host_pattern: "{{ item['regex'] }}"
 {% elif use_labels %}
   label: {{ item['label'] }}
 {% else %}
   hosts:
-{% for host in (groups['ceph_' + item['service']]|default(groups['ceph_mon'])) %}
+{% for host in (groups['ceph_' + item['service_type']] | default(groups['ceph_mon'])) %}
     - {{ host }}
 {% endfor %}
 {% endif %}
-{% if 'osd' in item['service'] and data_devices | length == 0%}
+{# OSD SECTION #}
+{% if 'osd' in item['service_type'] %}
 data_devices:
+{% if data_devices | length == 0%}
   all: true
+{% else %}
+{# RENDER #}
+{{render_map(data_devices, 'filters')}}
+{%- endif %}
+{% if db_devices | length != 0 -%}
+db_devices:
+{# RENDER #}
+{{render_map(db_devices, 'filters')}}
+{%- endif %}
+{% if wal_devices | length != 0 -%}
+wal_devices:
+{# RENDER #}
+{{render_map(wal_devices, 'filters')}}
+{%- endif %}
 encrypted: {{ 'true' if encrypted else 'false' }}
 {% endif %}
+{# RENDER SPEC FOR GENERIC ITEMS #}
+{% if item.get('spec', {}) | length > 0 %}
+spec:
+{{ render_map(item, 'spec') }}
+{%- endif %}
 {% endfor %}
