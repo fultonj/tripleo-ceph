@@ -9,7 +9,7 @@
 service_type: {{ item['service_type'] }}
 service_id: {{ item['service_id'] }}
 placement:
-count: {{ item['count'] | default((groups['ceph_' + item['service_type']] | default(groups['ceph_mon'])) | length) }}
+  count: {{ item['count'] | default((groups['ceph_' + item['service_type']] | default(groups['ceph_mon'])) | length) }}
 {% if use_pattern or 'osd' in item['service_type'] %}
   host_pattern: "{{ item['regex'] }}"
 {% elif use_labels %}
