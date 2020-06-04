@@ -50,19 +50,19 @@
       tags:
         - mon_config
 
+    - name: Add all the Ceph cluster hosts via orchestrator
+      include_role:
+        name: tripleo_cluster_add_nodes
+        tasks_from: nodes
+      vars:
+        ceph_client: "{{ ceph_cli }}"
+      tags:
+        - nodes
+
     - name: Use ceph orchestrator to scale ceph cluster
       when:
         - not apply_spec
       block:
-        - name: Add all the Ceph cluster hosts via orchestrator
-          include_role:
-            name: tripleo_cluster_add_nodes
-            tasks_from: nodes
-          vars:
-            ceph_client: "{{ ceph_cli }}"
-          tags:
-            - nodes
-
         - name: Add OSDs to the Ceph cluster via orchestrator
           include_role:
             name: tripleo_cluster_osds
@@ -72,6 +72,41 @@
             devices: []
           tags:
             - osds
+
+    - name: Use cephadm bootstrap add --apply-spec
+      when:
+        - apply_spec
+      block:
+        - name: Build the Ceph Cluster spec and apply it via orchestrator
+          include_role:
+            name: tripleo_cluster_spec_render
+            tasks_from: build_spec
+          vars:
+            ceph_client: "{{ ceph_cli }}"
+            dest_path: "/etc/ceph"
+            use_labels: false
+            use_pattern: false
+            tripleo_cephadm_services:
+              - {'service_type': 'mon', 'service_id': 'mon', 'regex': '*controller*', 'label': 'mon'}
+              - {'service_type': 'mgr', 'service_id': 'mgr', 'regex': '*controller*', 'label': 'mgr'}
+              - {'service_type': 'osd', 'service_id': 'osd', 'regex': '*ceph*', 'label': 'osd'}
+              - {'service_type': 'rgw', 'service_id': 'realm.zone', 'regex': '*controller*', 'label': 'rgw'}
+              - {'service_type': 'mds', 'service_id': 'mds', 'regex': '*controller*', 'label': 'mds'}
+          tags:
+            - ceph_spec
+            - day1
+
+        - name: Build the Ceph Cluster spec and apply it via orchestrator
+          include_role:
+            name: tripleo_cluster_spec_apply
+            tasks_from: apply_spec
+          vars:
+            ceph_client: "{{ ceph_cli }}"
+            config_mode: "spec"
+            spec_path: "/etc/ceph"
+          tags:
+            - ceph_spec_apply
+            - day1
 
         # It may make more sense to just use this
         # https://github.com/ceph/ceph-ansible/blob/master/library/ceph_pool.py
@@ -108,54 +143,6 @@
           tags:
             - keys
 
-      # depends on getting https://github.com/ceph/ceph/pull/34879
-    - name: Use cephadm bootstrap add --apply-spec
-      when:
-        - apply_spec
-      block:
-        # This task will be no longer required after PR#34879
-        # will be available
-        - name: Add all the Ceph cluster hosts via orchestrator
-          include_role:
-            name: tripleo_cluster_add_nodes
-            tasks_from: nodes
-          vars:
-            ceph_client: "{{ ceph_cli }}"
-          tags:
-            - nodes
-
-        - name: Build the Ceph Cluster spec and apply it via orchestrator
-          include_role:
-            name: tripleo_cluster_spec_render
-            tasks_from: build_spec
-          vars:
-            ceph_client: "{{ ceph_cli }}"
-            dest_path: "/etc/ceph"
-            use_labels: false
-            use_pattern: false
-            tripleo_cephadm_services:
-              - {'service_type': 'mon', 'service_id': 'mon', 'regex': '*controller*', 'label': 'mon'}
-              - {'service_type': 'mgr', 'service_id': 'mgr', 'regex': '*controller*', 'label': 'mgr'}
-              - {'service_type': 'osd', 'service_id': 'osd', 'regex': '*ceph*', 'label': 'osd'}
-              - {'service_type': 'rgw', 'service_id': 'realm.zone', 'regex': '*controller*', 'label': 'rgw'}
-              - {'service_type': 'mds', 'service_id': 'mds', 'regex': '*controller*', 'label': 'mds'}
-              - {'service_type': 'nfs', 'service_id': 'nfs', 'regex': '*controller*', 'label': 'nfs',
-                'spec': {'pool': 'mynfspool', 'namespace': 'myns'}}
-          tags:
-            - ceph_spec
-            - day1
-
-        - name: Build the Ceph Cluster spec and apply it via orchestrator
-          include_role:
-            name: tripleo_cluster_spec_apply
-            tasks_from: apply_spec
-          vars:
-            ceph_client: "{{ ceph_cli }}"
-            config_mode: "spec"
-            spec_path: "/etc/ceph"
-          tags:
-            - ceph_spec_apply
-            - day1
 
 - hosts: allovercloud
   tasks:
