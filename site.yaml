@@ -2,7 +2,7 @@
 - hosts: allovercloud
   vars:
     cephadm_bin_home: "/usr/sbin"
-    cephadm_pkg: "https://download.ceph.com/rpm-octopus/el8/x86_64/cephadm-15.2.3-0.el8.x86_64.rpm"
+    cephadm_pkg: "https://download.ceph.com/rpm-octopus/el8/x86_64/cephadm-15.2.5-0.el8.x86_64.rpm"
   tasks:
     - name: Bootstrap the first minimal ceph cluster via cephadm
       include_role:
@@ -32,7 +32,7 @@
     ceph_dot_conf: "{{ ceph_config_home}}/ceph.conf"
     ceph_keyring: "{{ ceph_config_home }}/ceph.client.admin.keyring"
     ceph_public_network: "172.16.11.0/24"
-    apply_spec: false
+    apply_spec: true
   tasks:
     - name: Set client fact
       include_role:

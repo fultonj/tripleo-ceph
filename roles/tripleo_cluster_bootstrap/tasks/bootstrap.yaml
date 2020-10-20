@@ -11,9 +11,19 @@
   run_once: true
   delegate_to: "{{ groups.get('mons', {})[0] }}"
 
+- name: install support packages
+  dnf:
+    name:
+      - podman
+      - lvm2
+    disable_gpg_check: true
+  become: true
+  delegate_to: "{{ groups.get('mons', {})[0] }}"
+
 - name: install cephadm
   package:
     name: "{{ cephadm_pkg }}"
+    disable_gpg_check: true
   register: result
   until: result is succeeded
   become: true
@@ -21,6 +31,7 @@
   delegate_to: "{{ groups.get('mons', {})[0] }}"
 
 - name: Ensure /etc/ceph exists
+  become: true
   file:
     path: "/etc/ceph"
     state: "directory"
@@ -34,7 +45,7 @@
   delegate_to: "{{ groups.get('mons', {})[0] }}"
 
 - name: Bootstrap the first minimal ceph cluster
-  shell: "{{ cephadm_cmd }} bootstrap --mon-ip {{ mon_ip }}"
+  shell: "{{ cephadm_cmd }} bootstrap --mon-ip {{ mon_ip }} --allow-fqdn-hostname"
   register: ceph_is_up
   become: true
   ignore_errors: true
