@@ -15,7 +15,7 @@ ceph_template_list:
   - host.yaml
 
 labels:
-  ceph_mon:
+  mons:
     - mon
     - mgr
     - mds
@@ -24,7 +24,7 @@ labels:
     - prometheus
     - node-exporter
     - alertmanager
-  ceph_osd:
+  osds:
     - osd
     - node-exporter
 
