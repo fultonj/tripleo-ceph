@@ -1,6 +1,6 @@
 ---
 - name: Add all the Ceph Mons provisioned on the overcloud
-  command: "{{ ceph_client }} orch host add {{ item }} {{ item }}.ctlplane mon"
+  command: "{{ ceph_client }} orch host add {{ item }} mon"
   run_once: true
   delegate_to: "{{ groups.get('mons', {})[0] }}"
   become: true
@@ -8,7 +8,7 @@
     - "{{ groups.get('mons', {}) }}"
 
 - name: Add all the Ceph OSDs provisioned in the overcloud
-  command: "{{ ceph_client }} orch host add {{ item }} {{ item }}.ctlplane osd"
+  command: "{{ ceph_client }} orch host add {{ item }} osd"
   run_once: true
   delegate_to: "{{ groups.get('mons', {})[0] }}"
   become: true

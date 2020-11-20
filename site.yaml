@@ -2,7 +2,7 @@
 - hosts: allovercloud
   vars:
     cephadm_bin_home: "/usr/sbin"
-    cephadm_pkg: "https://download.ceph.com/rpm-octopus/el8/x86_64/cephadm-15.2.5-0.el8.x86_64.rpm"
+    cephadm_pkg: "https://download.ceph.com/rpm-octopus/el8/x86_64/cephadm-15.2.6-0.el8.x86_64.rpm"
   tasks:
     - name: Bootstrap the first minimal ceph cluster via cephadm
       include_role:
@@ -31,7 +31,7 @@
     ceph_config_home: "/etc/ceph"
     ceph_dot_conf: "{{ ceph_config_home}}/ceph.conf"
     ceph_keyring: "{{ ceph_config_home }}/ceph.client.admin.keyring"
-    ceph_public_network: "172.16.11.0/24"
+    ceph_public_network: "192.168.24.0/24"
     apply_spec: true
   tasks:
     - name: Set client fact
@@ -87,11 +87,11 @@
             use_labels: false
             use_pattern: false
             tripleo_cephadm_services:
-              - {'service_type': 'mon', 'service_id': 'mon', 'regex': '*controller*', 'label': 'mon'}
-              - {'service_type': 'mgr', 'service_id': 'mgr', 'regex': '*controller*', 'label': 'mgr'}
+              - {'service_type': 'mon', 'service_id': 'mon', 'regex': '*ceph*', 'label': 'mon'}
+              - {'service_type': 'mgr', 'service_id': 'mgr', 'regex': '*ceph*', 'label': 'mgr'}
               - {'service_type': 'osd', 'service_id': 'osd', 'regex': '*ceph*', 'label': 'osd'}
-              - {'service_type': 'rgw', 'service_id': 'realm.zone', 'regex': '*controller*', 'label': 'rgw'}
-              - {'service_type': 'mds', 'service_id': 'mds', 'regex': '*controller*', 'label': 'mds'}
+              - {'service_type': 'rgw', 'service_id': 'realm.zone', 'regex': '*ceph*', 'label': 'rgw'}
+              - {'service_type': 'mds', 'service_id': 'mds', 'regex': '*ceph*', 'label': 'mds'}
           tags:
             - ceph_spec
             - day1
@@ -142,18 +142,3 @@
                   osd: "profile rbd pool=vms, profile rbd pool=volumes, profile rbd pool=images"
           tags:
             - keys
-
-
-- hosts: allovercloud
-  tasks:
-    - name: rsync ceph configuration and openstack key to all nodes
-      include_role:
-        name: ceph_client
-        tasks_from: sync
-      vars:
-        path: "/etc/ceph"
-        files:
-          - ceph.conf
-          - ceph.client.openstack.keyring
-      tags:
-        - client

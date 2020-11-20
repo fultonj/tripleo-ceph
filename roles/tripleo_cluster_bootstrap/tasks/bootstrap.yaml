@@ -1,13 +1,13 @@
 ---
 - name: Get Controller(s) ip addresses on storage the storage network
   debug:
-    msg: "{{ hostvars[groups.get('mons', {})[0]]['ansible_all_ipv4_addresses'] | ipaddr('172.16.11.0/24') | first }}"
+    msg: "{{ hostvars[groups.get('mons', {})[0]]['ansible_all_ipv4_addresses'] | ipaddr('192.168.24.0/24') | first }}"
   delegate_to: "{{ groups.get('mons', {})[0] }}"
   run_once: true
 
 - name: Set Mon ip addr
   set_fact:
-    mon_ip: "{{ hostvars[groups.get('mons', {})[0]]['ansible_all_ipv4_addresses'] | ipaddr('172.16.11.0/24') | first }}"
+    mon_ip: "{{ hostvars[groups.get('mons', {})[0]]['ansible_all_ipv4_addresses'] | ipaddr('192.168.24.0/24') | first }}"
   run_once: true
   delegate_to: "{{ groups.get('mons', {})[0] }}"
 
