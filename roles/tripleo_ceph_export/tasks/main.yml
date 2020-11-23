@@ -1,0 +1,20 @@
+---
+- name: get client.openstack cephx key
+  shell: "{{ ceph_cli }} auth get client.openstack"
+  register: auth_get_key
+
+- name: show key
+  debug:
+    msg: "{{ auth_get_key.stdout }}"
+
+- local_action: copy content={{ auth_get_key.stdout }} dest=ceph.client.openstack.keyring
+
+- name: get ceph.conf
+  shell: "{{ ceph_cli }} config generate-minimal-conf"
+  register: generate_config
+
+- name: show conf
+  debug:
+    msg: "{{ generate_config.stdout }}"
+
+- local_action: copy content={{ generate_config.stdout }} dest=ceph.conf

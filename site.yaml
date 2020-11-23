@@ -142,3 +142,18 @@
                   osd: "profile rbd pool=vms, profile rbd pool=volumes, profile rbd pool=images"
           tags:
             - keys
+
+- hosts: mons[0]
+  gather_facts: false
+  become: true
+  tasks:
+    - name: export ceph.conf and openstack key
+      include_role:
+        name: tripleo_ceph_export
+      vars:
+        cephadm_bin_home: "/usr/sbin"
+        ceph_dot_conf: "/etc/ceph/ceph.conf"
+        ceph_keyring: "/etc/ceph/ceph.client.admin.keyring"
+        ceph_cli: "{{ cephadm_bin_home }}/cephadm shell -c {{ ceph_dot_conf }} -k {{ ceph_keyring }} -- ceph"
+      tags:
+        - export
